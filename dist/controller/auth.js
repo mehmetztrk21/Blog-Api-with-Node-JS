@@ -22,7 +22,7 @@ const server_error_1 = require("../utils/server-error");
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const transporter = nodemailer_1.default.createTransport(sendgridTransport({
     auth: {
-        api_key: "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"
+        api_key: ""
     }
 }));
 const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -41,7 +41,7 @@ const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             yield writer_1.User.create(Object.assign({}, body));
             // transporter.sendMail({
             //     to: req.body.email,
-            //     from: "memoc2133m@gmail.com",
+            //     from: "@gmail.com",
             //     subject: "Welcome",
             //     html: `
             //     <p>WELCOME TO FAMİLY</p>
@@ -106,7 +106,7 @@ const resetCode = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             yield user.save();
             transporter.sendMail({
                 to: req.body.email,
-                from: "memoc2133m@gmail.com",
+                from: "@gmail.com",
                 subject: "Reset Password",
                 html: `
                     <p>You requested a password reset</p>
