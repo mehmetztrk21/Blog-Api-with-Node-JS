@@ -17,5 +17,7 @@ exports.User = database_1.sequelize.define("writer", {
     surname: sequelize_1.default.STRING,
     phone: sequelize_1.default.STRING,
     email: sequelize_1.default.STRING,
-    password: sequelize_1.default.STRING
+    password: sequelize_1.default.STRING,
+    resetCode: sequelize_1.default.STRING,
+    resetCodeExpiration: sequelize_1.default.DATE
 });

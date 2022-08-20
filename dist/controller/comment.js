@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteComment = exports.updateComment = exports.createComment = exports.getCommentsByBlogId = void 0;
 const comment_1 = require("../models/comment");
+const server_error_1 = require("../utils/server-error");
 const getCommentsByBlogId = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const blogId = req.params.blogId;
     try {
@@ -18,44 +19,60 @@ const getCommentsByBlogId = (req, res, next) => __awaiter(void 0, void 0, void 0
         return res.status(200).json({ message: "getting success", comments: comments });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.getCommentsByBlogId = getCommentsByBlogId;
 const createComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
     const body = req.body;
     const blogId = req.params.blogId;
     try {
-        yield comment_1.Comment.create(Object.assign(Object.assign({}, body), { writerId: 1, blogId: blogId }));
+        yield comment_1.Comment.create(Object.assign(Object.assign({}, body), { writerId: userId, blogId: blogId }));
         return res.status(201).json({ message: "created." });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.createComment = createComment;
 const updateComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
     const body = req.body;
     const commentId = req.params.commentId;
     try {
         const comment = yield comment_1.Comment.findByPk(commentId);
-        yield (comment === null || comment === void 0 ? void 0 : comment.update(Object.assign({}, body)));
-        yield (comment === null || comment === void 0 ? void 0 : comment.save());
-        return res.status(201).json({ message: "updated", id: commentId });
+        if (comment) {
+            if (comment.writerId == userId) {
+                yield (comment === null || comment === void 0 ? void 0 : comment.update(Object.assign({}, body)));
+                yield (comment === null || comment === void 0 ? void 0 : comment.save());
+                return res.status(200).json({ message: "updated", id: commentId });
+            }
+            return res.status(401).json({ message: "Not authenticated." });
+        }
+        return res.status(404).json({ message: "Comment not found" });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.updateComment = updateComment;
 const deleteComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
     const commentId = req.params.commentId;
     try {
         const comment = yield comment_1.Comment.findByPk(commentId);
-        yield (comment === null || comment === void 0 ? void 0 : comment.destroy());
-        return res.status(204).json({ message: "deleted", id: commentId });
+        if (comment) {
+            if (comment.writerId == userId) {
+                yield (comment === null || comment === void 0 ? void 0 : comment.destroy());
+                return res.status(204).json({ message: "deleted", id: commentId });
+            }
+            return res.status(401).json({ message: "Not authenticated." });
+        }
+        return res.status(404).json({ message: "Comment not found" });
     }
     catch (error) {
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.deleteComment = deleteComment;

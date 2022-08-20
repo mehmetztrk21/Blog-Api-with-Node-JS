@@ -14,11 +14,25 @@ const database_1 = require("./utils/database");
 const blog_2 = require("./routes/blog");
 const comment_2 = require("./routes/comment");
 const auth_1 = require("./routes/auth");
+const category_2 = require("./routes/category");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 app.use("/blog", blog_2.router);
 app.use("/comment", comment_2.router);
 app.use("/auth", auth_1.router);
+app.use("/category", category_2.router);
+app.use((error, req, res, next) => {
+    const status = error.statusCode || 500;
+    const message = error.message || "Error";
+    const data = error.data || "Error";
+    res.status(status).json({ message: message, data: data });
+});
 blog_1.Blog.belongsTo(writer_1.User, {
     constraints: true,
     onDelete: "CASCADE"
@@ -41,7 +55,6 @@ database_1.sequelize.sync()
     return writer_1.User.count();
 })
     .then(res => {
-    console.log(res);
     console.log('Connection has been established successfully.');
     if (res < 0)
         writer_1.User.create({ name: "Ali", email: "test@gmail.com" });

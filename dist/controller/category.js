@@ -11,13 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCategory = exports.updateCategory = exports.createCategory = exports.getCategories = void 0;
 const category_1 = require("../models/category");
+const server_error_1 = require("../utils/server-error");
 const getCategories = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categories = yield category_1.Category.findAll();
         return res.status(200).json({ message: "getting success", categories: categories });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.getCategories = getCategories;
@@ -28,7 +29,7 @@ const createCategory = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         return res.status(201).json({ message: "created" });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.createCategory = createCategory;
@@ -39,10 +40,10 @@ const updateCategory = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const category = yield category_1.Category.findByPk(categoryId);
         yield (category === null || category === void 0 ? void 0 : category.update(Object.assign({}, body)));
         yield (category === null || category === void 0 ? void 0 : category.save());
-        return res.status(201).json({ message: "updated", id: categoryId });
+        return res.status(200).json({ message: "updated", id: categoryId });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.updateCategory = updateCategory;
@@ -51,9 +52,10 @@ const deleteCategory = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         const category = yield category_1.Category.findByPk(categoryId);
         yield (category === null || category === void 0 ? void 0 : category.destroy());
+        return res.status(204).json({ message: "deleted." });
     }
     catch (error) {
-        console.log(error);
+        return (0, server_error_1.serverError)(next);
     }
 });
 exports.deleteCategory = deleteCategory;

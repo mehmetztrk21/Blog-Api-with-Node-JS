@@ -1,4 +1,5 @@
 import { Category } from "../models/category";
+import { serverError } from "../utils/server-error";
 
 type requestBody = { name: String };
 
@@ -7,7 +8,7 @@ export const getCategories = async (req: any, res: any, next: any) => {
         const categories = await Category.findAll();
         return res.status(200).json({ message: "getting success", categories: categories });
     } catch (error) {
-        console.log(error);
+        return serverError(next);
     }
 };
 export const createCategory = async (req: any, res: any, next: any) => {
@@ -16,7 +17,7 @@ export const createCategory = async (req: any, res: any, next: any) => {
         await Category.create({ ...body });
         return res.status(201).json({ message: "created" });
     } catch (error) {
-        console.log(error);
+        return serverError(next);
     }
 };
 export const updateCategory = async (req: any, res: any, next: any) => {
@@ -26,9 +27,9 @@ export const updateCategory = async (req: any, res: any, next: any) => {
         const category = await Category.findByPk(categoryId);
         await category?.update({ ...body });
         await category?.save();
-        return res.status(201).json({ message: "updated", id: categoryId });
+        return res.status(200).json({ message: "updated", id: categoryId });
     } catch (error) {
-        console.log(error);
+        return serverError(next);
     }
 };
 export const deleteCategory = async (req: any, res: any, next: any) => {
@@ -36,7 +37,8 @@ export const deleteCategory = async (req: any, res: any, next: any) => {
     try {
         const category = await Category.findByPk(categoryId);
         await category?.destroy();
+        return res.status(204).json({ message: "deleted." });
     } catch (error) {
-        console.log(error);
+        return serverError(next);
     }
 }

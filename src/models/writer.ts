@@ -13,6 +13,8 @@ export const User=sequelize.define("writer",{
     surname:Sequelize.STRING,
     phone:Sequelize.STRING,
     email:Sequelize.STRING,
-    password:Sequelize.STRING
+    password:Sequelize.STRING,
+    resetCode:Sequelize.STRING,
+    resetCodeExpiration:Sequelize.DATE
 });
 
