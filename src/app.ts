@@ -12,7 +12,13 @@ import { router as commentRoutes } from "./routes/comment";
 import { router as authRoutes } from "./routes/auth";
 import { router as categoryController } from "./routes/category";
 
+const session=require('express-session');
 const app = express();
+
+
+app.use(session({secret:"my secret",resave:false,saveUnitialized:false}));
+
+
 app.use(bodyParser.json());
 
 
@@ -62,15 +68,15 @@ Category.belongsToMany(Blog, { through: blogCategory });
 Blog.belongsToMany(Category, { through: blogCategory })
 
 sequelize.sync()
-    .then(result => {
+    .then((result:any) => {
         return User.count();
     })
-    .then(res => {
+    .then((res:any) => {
         console.log('Connection has been established successfully.');
         if (res < 0)
             User.create({ name: "Ali", email: "test@gmail.com" })
         app.listen(3000);
     })
-    .catch(err => { console.log(err); });
+    .catch((err:any) => { console.log(err); });
 
 

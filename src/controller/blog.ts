@@ -14,10 +14,15 @@ export const getBlogs = async (req: any, res: any, next: any) => {
     }
 };
 export const createBlog = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    console.log(req.session,req.headers);
+        const userId = req.session.userId;
+    const categories = req.body.categories;
     const body = req.body as requestBody;
     try {
-        await Blog.create({ ...body, writerId: userId });
+        const blog: any = await Blog.create({ ...body, writerId: userId });
+        if (categories.length > 0)
+            await blog?.setCategories(categories);
+        await blog?.save();
     }
     catch (err) {
         return serverError(next);
@@ -25,15 +30,19 @@ export const createBlog = async (req: any, res: any, next: any) => {
     return res.status(201).json("created");
 };
 export const updateBlog = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body as requestBody;
-    const blogId = req.params.blogId
+    const blogId = req.params.blogId;
+    const categories = req.body.categories;
     try {
         const blog: any = await Blog.findByPk(blogId);
         if (blog) {
             if (blog.writerId == userId) {
                 await blog?.update({ ...body });
+                if (categories.length > 0)
+                    await blog?.setCategories(categories);
                 await blog?.save();
+
                 return res.status(204).json({ message: "updated", id: blogId });
             }
             return res.status(401).json({ message: "Not authenticated." })
@@ -46,7 +55,7 @@ export const updateBlog = async (req: any, res: any, next: any) => {
 };
 export const deleteBlog = async (req: any, res: any, next: any) => {
     const blogId = req.params.blogId;
-    const userId = req.userId;
+    const userId = req.session.userId;
     try {
         const blog: any = await Blog.findByPk(req.params.blogId);
         if (blog) {

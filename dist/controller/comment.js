@@ -24,7 +24,7 @@ const getCommentsByBlogId = (req, res, next) => __awaiter(void 0, void 0, void 0
 });
 exports.getCommentsByBlogId = getCommentsByBlogId;
 const createComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body;
     const blogId = req.params.blogId;
     try {
@@ -37,7 +37,7 @@ const createComment = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.createComment = createComment;
 const updateComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body;
     const commentId = req.params.commentId;
     try {
@@ -58,7 +58,7 @@ const updateComment = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.updateComment = updateComment;
 const deleteComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const commentId = req.params.commentId;
     try {
         const comment = yield comment_1.Comment.findByPk(commentId);

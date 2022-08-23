@@ -1,5 +1,5 @@
 import Express, { Router } from "express";
-import { resetCode, resetPassword, signIn, signUp, updateUser } from "../controller/auth";
+import { resetCode, resetPassword, signIn, signOut, signUp, updateUser } from "../controller/auth";
 import { isAuth } from "../middleware/is-auth";
 import { body, check } from "express-validator";
 
@@ -23,6 +23,8 @@ router.post("/signin", [
     body("email").isEmail().trim().withMessage("Email is not valid.").notEmpty().withMessage("Email is required"),
     body("password").notEmpty().withMessage("Password is required.")
 ], signIn);
+
+router.post("/signout",isAuth,signOut);
 
 router.put("/update", isAuth, updateUser);
 

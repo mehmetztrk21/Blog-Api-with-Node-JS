@@ -25,10 +25,15 @@ const getBlogs = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getBlogs = getBlogs;
 const createBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    console.log(req.session, req.headers);
+    const userId = req.session.userId;
+    const categories = req.body.categories;
     const body = req.body;
     try {
-        yield blog_1.Blog.create(Object.assign(Object.assign({}, body), { writerId: userId }));
+        const blog = yield blog_1.Blog.create(Object.assign(Object.assign({}, body), { writerId: userId }));
+        if (categories.length > 0)
+            yield (blog === null || blog === void 0 ? void 0 : blog.setCategories(categories));
+        yield (blog === null || blog === void 0 ? void 0 : blog.save());
     }
     catch (err) {
         return (0, server_error_1.serverError)(next);
@@ -37,14 +42,17 @@ const createBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createBlog = createBlog;
 const updateBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body;
     const blogId = req.params.blogId;
+    const categories = req.body.categories;
     try {
         const blog = yield blog_1.Blog.findByPk(blogId);
         if (blog) {
             if (blog.writerId == userId) {
                 yield (blog === null || blog === void 0 ? void 0 : blog.update(Object.assign({}, body)));
+                if (categories.length > 0)
+                    yield (blog === null || blog === void 0 ? void 0 : blog.setCategories(categories));
                 yield (blog === null || blog === void 0 ? void 0 : blog.save());
                 return res.status(204).json({ message: "updated", id: blogId });
             }
@@ -59,7 +67,7 @@ const updateBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.updateBlog = updateBlog;
 const deleteBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const blogId = req.params.blogId;
-    const userId = req.userId;
+    const userId = req.session.userId;
     try {
         const blog = yield blog_1.Blog.findByPk(req.params.blogId);
         if (blog) {

@@ -63,6 +63,7 @@ export const signIn = async (req: any, res: any, next: any) => {
                     'somesupersecretsecret',
                     { expiresIn: '1h' }
                 );
+                req.session.isLoggedIn = true;
                 return res.status(200).json({ token: token, userId: user.id.toString() });
             }
             return res.status(401).json({ message: "invalid password." });
@@ -72,10 +73,20 @@ export const signIn = async (req: any, res: any, next: any) => {
     } catch (error) {
         return serverError(next);
     }
+};
+
+export const signOut = async (req: any, res: any, next: any) => {
+    if (req.headers && req.headers.authorization) {
+        const token = req.headers.authorization.split(" ")[1];
+        if (token) {
+            delete req.session.userId;
+            return res.status(200).json({ message: "You are logged out success." })
+        }
+    }
 }
 
 export const updateUser = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body as updateBody;
     try {
         const user: any = await User.findByPk(userId);

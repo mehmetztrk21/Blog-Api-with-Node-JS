@@ -13,7 +13,7 @@ export const getCommentsByBlogId = async (req: any, res: any, next: any) => {
     }
 };
 export const createComment = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body as requestBody;
     const blogId = req.params.blogId;
     try {
@@ -24,7 +24,7 @@ export const createComment = async (req: any, res: any, next: any) => {
     }
 };
 export const updateComment = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body as requestBody;
     const commentId = req.params.commentId;
     try {
@@ -44,7 +44,7 @@ export const updateComment = async (req: any, res: any, next: any) => {
     }
 };
 export const deleteComment = async (req: any, res: any, next: any) => {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const commentId = req.params.commentId;
     try {
         const comment: any = await Comment.findByPk(commentId);

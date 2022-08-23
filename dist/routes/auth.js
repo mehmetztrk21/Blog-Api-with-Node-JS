@@ -23,6 +23,7 @@ exports.router.post("/signin", [
     (0, express_validator_1.body)("email").isEmail().trim().withMessage("Email is not valid.").notEmpty().withMessage("Email is required"),
     (0, express_validator_1.body)("password").notEmpty().withMessage("Password is required.")
 ], auth_1.signIn);
+exports.router.post("/signout", is_auth_1.isAuth, auth_1.signOut);
 exports.router.put("/update", is_auth_1.isAuth, auth_1.updateUser);
 exports.router.post("/resetCode", auth_1.resetCode);
 exports.router.post("/resetPassword", [

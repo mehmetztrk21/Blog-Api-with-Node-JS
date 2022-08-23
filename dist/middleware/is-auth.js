@@ -17,12 +17,12 @@ const isAuth = (req, res, next) => {
         decodedToken = jsonwebtoken_1.default.verify(token, "somesupersecretsecret");
     }
     catch (error) {
-        console.log(error);
+        return res.status(401).json({ message: "Not authenticated." });
     }
     if (!decodedToken) {
-        console.log("Not authenticated");
+        return res.status(401).json({ message: "Not authenticated." });
     }
-    req.userId = decodedToken.userId;
+    req.session.userId = decodedToken.userId;
     next();
 };
 exports.isAuth = isAuth;

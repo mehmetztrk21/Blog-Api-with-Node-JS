@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.resetCode = exports.updateUser = exports.signIn = exports.signUp = void 0;
+exports.resetPassword = exports.resetCode = exports.updateUser = exports.signOut = exports.signIn = exports.signUp = void 0;
 const writer_1 = require("../models/writer");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -68,6 +68,7 @@ const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                     email: user.email,
                     userId: user.id.toString()
                 }, 'somesupersecretsecret', { expiresIn: '1h' });
+                req.session.isLoggedIn = true;
                 return res.status(200).json({ token: token, userId: user.id.toString() });
             }
             return res.status(401).json({ message: "invalid password." });
@@ -79,8 +80,26 @@ const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.signIn = signIn;
+const signOut = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.headers && req.headers.authorization) {
+        const token = req.headers.authorization.split(" ")[1];
+        if (token) {
+            // signout demek session ı temizle demek
+            // sessiondaki tüm keyleri al tek tek sil demek bu
+            // direkt obje gönderirsen yakalayamayabilir...
+            //abi ben session u kullanmadım ama sadece olur mu diye işte req.session=true yaptım.
+            // jwt tokenın güvenlik için kullanılıyor sessinda da bu adamın oturumu var mı yani giriş yaptı mı onu kontrol edersin bir de token verify yaparsın geçerli mi değil mi diye o kadar :)
+            //böyle bir mekanizma kurdum abi
+            // session ı jwt ile entegre et öyle dene bir de nasıl yani abi şu anda seSSİONDA USER BİLGİSİ TUTOYRUM 
+            // TAMAM İŞTe ek olarak session ile jwt yi eşleştiren bir id kullan session idni jwtnin içine göm verify ettikten sonra sessionid = jwt.sessionid kontrolü ekle eğer başarısız olursa 401 unauthorized ver :) dene bi ondan sonra anlayacaksın ne demek istediğimi tamamdır abi deniyim :))kolay gele öptüm baba sağol abi sana da :)e
+            delete req.session.userId;
+            return res.status(200).json({ message: "You are logged out success." });
+        }
+    }
+});
+exports.signOut = signOut;
 const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.userId;
+    const userId = req.session.userId;
     const body = req.body;
     try {
         const user = yield writer_1.User.findByPk(userId);
